@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+    <style>
+        #messages {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            height: 200px;
+            overflow: auto;
+        }
+        #messageInput {
+            margin: 20px;
+            padding: 10px;
+            width: calc(100% - 44px); /* Adjust width based on padding */
+        }
+        #sendMessage {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="roomUserLabel"></div>
+    <div id="messages"></div>
+    <input id="messageInput" type="text" placeholder="Type your message here..." />
+    <button id="sendMessage">Send Message</button>
+    <script>
+        // Generate random room_id and user_id
+        const room_id = 650;
+        const user_id = Math.floor(Math.random() * 1000);
+        document.getElementById("roomUserLabel").textContent = `Room ID: ${room_id}, User ID: ${user_id}`;
+
+        const ws = new WebSocket(`ws://localhost:8100/api/v1/ws/${room_id}/${user_id}`); // Updated WebSocket URL
+
+        ws.onopen = function(event) {
+            console.log("Connected to WebSocket.");
+            const welcomeMessage = {message: "Hello, server!"}; // You might adjust this as per server's expected format
+            ws.send(JSON.stringify(welcomeMessage));
+        };
+
+        ws.onmessage = function(event) {
+            console.log("Message from server:", event.data);
+            const messagesElement = document.getElementById("messages");
+            const messageElement = document.createElement("div");
+            messageElement.textContent = event.data; // You might want to parse JSON and display a specific field
+            messagesElement.appendChild(messageElement);
+        };
+
+        ws.onerror = function(event) {
+            console.error("WebSocket error:", event);
+        };
+
+        ws.onclose = function(event) {
+            console.log("WebSocket connection closed:", event);
+        };
+
+        document.getElementById("sendMessage").onclick = function() {
+            const messageInput = document.getElementById("messageInput");
+            const message = {message: messageInput.value}; // Adjust this structure as per your server's expectations
+            ws.send(JSON.stringify(message));
+            messageInput.value = ''; // Clear input after sending
+        };
+    </script>
+</body>
+</html>

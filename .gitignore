@@ -1,0 +1,40 @@
+# Bytecode compiled files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.env
+
+# IDE specific settings
+.vscode/
+
+# Operating system files
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+*.swp # Linux/Unix specific temporary files created by vi/vim
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Flask specific
+instance/
+
+# Django specific
+*.sqlite3
+*.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+
+
+
