@@ -1,7 +1,7 @@
 import asyncio
 import redis.asyncio as aioredis
 import json
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 
 
 class RedisPubSubManager:
@@ -110,6 +110,24 @@ class WebSocketManager:
             message (str): Message to be broadcasted.
         """
         await self.pubsub_client._publish(room_id, message)
+    
+    
+    async def broadcast_to_all_directly(self, message: str) -> None:
+        """
+        Broadcasts a message directly to all connected WebSocket clients.
+
+        Args:
+            message (str): Message to be broadcasted.
+        """
+        for room_id, sockets in self.rooms.items():
+            for socket in list(sockets):  # Convert to list to avoid modification during iteration
+                try:
+                    await socket.send_text(message)
+                except WebSocketDisconnect:
+                    # Handle the disconnection, e.g., remove the socket from the room
+                    sockets.remove(socket)
+                    print(f"Removed disconnected socket from room {room_id}")
+
 
     async def remove_user_from_room(self, room_id: str, websocket: WebSocket) -> None:
         """
@@ -139,4 +157,5 @@ class WebSocketManager:
                 all_sockets = self.rooms[room_id]
                 for socket in all_sockets:
                     data = message['data'].decode('utf-8')
+                    print(f"Received message: {data} in room: {room_id}")
                     await socket.send_text(data)
