@@ -42,7 +42,7 @@ async def broadcast_message(room_id: str, user_id: int, message_body: MessageBod
         "message": message_body.message
     }
     #await socket_manager.broadcast_to_room(room_id, json.dumps(message))
-    await socket_manager.broadcast_to_all_directly(json.dumps(message))
+    await socket_manager.broadcast_to_room(room_id, json.dumps(message))
     return {"message": "Broadcasted successfully"}
 
 
